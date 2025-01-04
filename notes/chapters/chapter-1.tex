@@ -1,0 +1,159 @@
+\chapter{Linear Regression}
+
+Linear Regression is a statistical method used for modeling the relationship between a dependent variable 
+(target or output) and one or more independent variables (predictors or features).
+
+\section{Linear Regression with Single Feature}
+This regression deals with one independent variable ($x$).
+
+\subsection{Linear Regression Model}
+
+\begin{equation}
+y = \theta_0^t + \theta_1^t x + \epsilon
+\end{equation}
+
+\begin{equation}
+\hat{y} = h_\theta(x) = \theta_0 + \theta_1 x
+\end{equation}
+
+
+\noindent
+where:
+\begin{itemize}
+    \item $y$:  the dependent variable (target)
+    \item $x$: the independent variable or input feature used to predict \(y\).
+    \item $\theta_1^t$:  the slope or coefficient of \(x\) at iteration \(t\)
+    \item $\theta_0^t$: intercept at iteration $t$
+    \item $\epsilon$: the error term or residual. It captures the noise or other unmodeled effects.
+    \item $\hat{y}$: the output of the linear regression model () for a given input (\(x\))
+    \item $h_\theta(x)$: the hypothesis function for linear regression.
+\end{itemize}
+
+\subsection{Cost Function}
+The cost function for linear regression measures the average squared error between predicted and actual values. It is defined as:
+\begin{equation}
+J(\theta_0, \theta_1) = \frac{1}{2m} \sum_{i=1}^m \left( \hat{y}^{(i)} - y^{(i)} \right)^2
+= \frac{1}{2m} \sum_{i=1}^m \left( (\theta_0 + \theta_1 x^{(i)}) - y^{(i)} \right)^2
+\end{equation}
+
+\noindent
+where:
+\begin{itemize}
+    \item $m$: Number of input and output datapoints.
+    \item $\frac{1}{2}$: A factor kept for convenience, as it simplifies the derivative calculations
+    during gradient descent.
+\end{itemize}
+
+\subsection{Minimizing Cost}
+
+The error for each data point can be written as:
+
+\begin{equation}
+    e^{(i)} = y^{(i)} - (\theta_0 + \theta_1 x^{(i)})
+\end{equation}
+
+The cost function becomes:
+\begin{equation}
+    J(\theta_0, \theta_1) = \frac{1}{2m} \sum_{i=1}^m e^{(i)^2}
+\end{equation}
+
+We need to find \(\theta_0\) and \(\theta_1\) that minimize \(J\). This requires setting the partial derivatives of
+\(J\) with respect to \(\theta_0\) and \(\theta_1\) to zero as the cost function is quadratic and
+there's just one critical point.
+\\\\
+\textbf{Solving for $\theta_0$:}
+\begin{equation*}
+    \frac{\partial J}{\partial \theta_0} = -\frac{1}{m} \sum_{i=1}^m \left( y^{(i)} - (\theta_0 + \theta_1 x^{(i)}) \right) = 0
+\end{equation*}
+
+\begin{gather*}
+    \sum_{i=1}^m \left( y^{(i)} - (\theta_0 + \theta_1 x^{(i)}) \right) = 0\\
+    \sum_{i=1}^m y^{(i)} = m\theta_0 + \theta_1 \sum_{i=1}^m x^{(i)}\\
+\end{gather*}
+
+Divide through by \(m\):
+
+\[
+\bar{y} = \theta_0 + \theta_1 \bar{x}
+\]
+
+where \(\bar{y}\) and \(\bar{x}\) are the means of \(y^{(i)}\) and \(x^{(i)}\), respectively.
+
+Rearranging:
+\begin{equation}
+    \theta_0 = \bar{y} - \theta_1 \bar{x}
+\end{equation}
+\\\\
+\textbf{Solving for $\theta_1$:}
+\begin{equation*}
+    \frac{\partial J}{\partial \theta_1} = -\frac{1}{m} \sum_{i=1}^m x^{(i)} \left( y^{(i)} -
+    (\theta_0 + \theta_1 x^{(i)}) \right) = 0
+\end{equation*}
+
+
+Expanding:
+\[
+\sum_{i=1}^m x^{(i)} y^{(i)} = \theta_0 \sum_{i=1}^m x^{(i)} + \theta_1 \sum_{i=1}^m \left( x^{(i)} \right)^2
+\]
+Substitute \(\theta_0 = \bar{y} - \theta_1 \bar{x}\):
+\[
+\sum_{i=1}^m x^{(i)} y^{(i)} = (\bar{y} - \theta_1 \bar{x}) \sum_{i=1}^m x^{(i)} + \theta_1 \sum_{i=1}^m (x^{(i)})^2
+\]
+Simplify:
+\[
+\sum_{i=1}^m x^{(i)} y^{(i)} = \bar{y} \sum_{i=1}^m x^{(i)} - \theta_1 \bar{x} \sum_{i=1}^m x^{(i)} + \theta_1 \sum_{i=1}^m (x^{(i)})^2
+\]
+Reorganize terms:
+\[
+\theta_1 \left( \sum_{i=1}^m (x^{(i)})^2 - \frac{1}{m} \left( \sum_{i=1}^m x^{(i)} \right)^2 \right) = \sum_{i=1}^m x^{(i)} y^{(i)} - \frac{1}{m} \sum_{i=1}^m x^{(i)} \sum_{i=1}^m y^{(i)}
+\]
+
+Using simplified notation:
+\begin{itemize}
+    \item \( \bar{x} = \frac{1}{m} \sum_{i=1}^m x^{(i)} \) (mean of \(x\))
+    \item \( \bar{y} = \frac{1}{m} \sum_{i=1}^m y^{(i)} \) (mean of \(y\))
+\end{itemize}
+
+\begin{equation}
+\theta_1 = \frac{\sum_{i=1}^m \left( x^{(i)} - \bar{x} \right) \left( y^{(i)} - \bar{y} \right)}{\sum_{i=1}^m \left( x^{(i)} - \bar{x} \right)^2}
+\end{equation}
+
+\subsection{Gradient Descent Algorithm to find optimal $\theta_0$ and $\theta_1$}
+
+\begin{enumerate}
+    \item Gradient descent moves the parameters in the direction of the negative gradient (steepest descent)
+    of the cost function.
+    \item The learning rate $\alpha$ determines the size of each step. If $\alpha$ is too large, the algorithm
+    may overshoot the minimum. If it is too small, convergence may take too long.
+    \item The iterative process ensures gradual improvement in the model parameters until the cost function is minimized.
+\end{enumerate}
+
+\begin{algorithm}
+\caption{Gradient Descent for Linear Regression}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Learning rate $\alpha$, initial values for $\theta_0$ and $\theta_1$, and maximum iterations or
+convergence threshold $\epsilon$.
+\STATE \textbf{Output:} Optimized parameters $\theta_0$ and $\theta_1$.
+\STATE Set initial values for $\theta_0$ and $\theta_1$.
+\REPEAT
+    \STATE Compute updates for parameters:
+    \begin{align*}
+        \text{temp0} & := \theta_0 - \alpha \cdot \frac{1}{m} \sum_{i=1}^m \left( \theta_0 + \theta_1 x^{(i)} - y^{(i)} \right) \\
+        \text{temp1} & := \theta_1 - \alpha \cdot \frac{1}{m} \sum_{i=1}^m \left( \theta_0 + \theta_1 x^{(i)} - y^{(i)} \right) x^{(i)}
+    \end{align*}
+    \STATE Update parameters simultaneously:
+    \begin{align*}
+        \theta_0 & := \text{temp0} \\
+        \theta_1 & := \text{temp1}
+    \end{align*}
+    \STATE Compute cost function:
+    \[
+    J(\theta_0, \theta_1) = \frac{1}{2m} \sum_{i=1}^m \left( \theta_0 + \theta_1 x^{(i)} - y^{(i)} \right)^2
+    \]
+\UNTIL {maximum iterations reached \textbf{or} change in $J(\theta_0, \theta_1)$ is below threshold $\epsilon$.}
+\RETURN $\theta_0, \theta_1$
+\end{algorithmic}
+\end{algorithm}
+
+\nocite{*}
+
