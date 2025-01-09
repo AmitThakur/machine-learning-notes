@@ -128,7 +128,7 @@ Using simplified notation:
     \item The iterative process ensures gradual improvement in the model parameters until the cost function is minimized.
 \end{enumerate}
 
-\begin{algorithm}
+\begin{algorithm}[h!]
 \caption{Gradient Descent for Linear Regression}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} Learning rate $\alpha$, initial values for $\theta_0$ and $\theta_1$, and maximum iterations or
@@ -156,4 +156,176 @@ convergence threshold $\epsilon$.
 \end{algorithm}
 
 \nocite{*}
+\newpage
+\section{Linear Regression with Multiple Features}
 
+\begin{equation}
+    y = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \cdots + \theta_n x_n + e
+\end{equation}
+
+\noindent where
+\begin{itemize}
+    \item $y$: The dependent variable (or target/output variable) that the model predicts
+    \item $\theta_0$: The intercept term, representing the value of \(y\) when all \(x_i = 0\)
+    \item $\theta_1, \theta_2, \dots, \theta_n$: The coefficients or weights for the independent variables
+    \(x_1, x_2, \dots, x_n\).
+\end{itemize}
+
+\subsection{General Form}
+
+\begin{equation}
+    y = \boldsymbol{\theta}^T \mathbf{x} + e
+\end{equation}
+
+where $ \boldsymbol{\theta} \in \mathbb{R}^{(n+1) \times 1}$ is the parameter vector (column vector of coefficients), defined as:
+
+\begin{equation}
+    \boldsymbol{\theta} =
+     \begin{bmatrix}
+     \theta_0 \\
+     \theta_1 \\
+     \vdots \\
+     \theta_n
+     \end{bmatrix}
+\end{equation}
+
+And the input feature vector $\mathbf{x} \in \mathbb{R}^{(n+1) \times 1}$  defined as:
+
+\begin{equation}
+    \mathbf{x} = \begin{bmatrix}
+                     1 \\
+                    x_1 \\
+                    \vdots \\
+                    x_n
+    \end{bmatrix}
+\end{equation}
+
+The prediction function is:
+
+\begin{equation}
+    \hat{y} = h_\theta(\mathbf{x}) = \boldsymbol{\theta}^T \mathbf{x}
+\end{equation}
+
+\subsection{Cost Function}
+
+The residuals (\(E\)) represent the difference between the actual target values (\(y\)) and the
+predicted values (\(X \cdot \boldsymbol{\theta}\)). For \(m\) data points:
+
+\begin{equation}
+    E = \begin{bmatrix}
+    e^{(1)} \\
+    e^{(2)} \\
+    \vdots \\
+    e^{(m)}
+    \end{bmatrix}
+    = X \cdot \boldsymbol{\theta} - y
+\end{equation}
+
+The cost function \(J(\boldsymbol{\theta})\) is:
+
+\begin{equation}
+    J(\boldsymbol{\theta}) = \frac{1}{2m} \sum_{i=1}^m \left( e^{(i)} \right)^2
+\end{equation}
+
+Using \(E = X \cdot \boldsymbol{\theta} - y\), we can write:
+\[
+J(\boldsymbol{\theta}) = \frac{1}{2m} \|E\|^2
+\]
+
+Expanding this using the transpose:
+\[
+J(\boldsymbol{\theta}) = \frac{1}{2m} E^T E
+\]
+
+Substituting \(E = X \cdot \boldsymbol{\theta} - y\):
+\begin{equation}
+J(\boldsymbol{\theta}) = \frac{1}{2m} (X \cdot \boldsymbol{\theta} - y)^T (X \cdot \boldsymbol{\theta} - y)
+\end{equation}
+
+
+To minimize \(J(\boldsymbol{\theta})\), we compute the gradient (partial derivative) with respect to each
+parameter \(\theta_j\):
+
+\begin{equation}
+    \frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{m} \sum_{i=1}^m \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}
+\end{equation}
+
+We now compute the partial derivative of \( J(\boldsymbol{\theta}) \) with respect to \( \theta_j \).
+The chain rule will be used.
+
+\[
+J(\boldsymbol{\theta}) = \frac{1}{2m} \left[ (X \cdot \boldsymbol{\theta})^T (X \cdot \boldsymbol{\theta})
+- 2 y^T (X \cdot \boldsymbol{\theta}) + y^T y \right]
+\]
+
+\[
+J(\boldsymbol{\theta}) = \frac{1}{2m} \left[ \boldsymbol{\theta}^T X^T X \boldsymbol{\theta}
+- 2 y^T X \boldsymbol{\theta} \right] + \text{constant terms independent of } \boldsymbol{\theta}
+\]
+
+Compute the derivative with respect to \( \boldsymbol{\theta} \) (matrix calculus):
+
+\begin{itemize}
+    \item Derivative of \( \boldsymbol{\theta}^T X^T X \boldsymbol{\theta} \):
+    \[
+     \frac{\partial}{\partial \boldsymbol{\theta}} \left( \boldsymbol{\theta}^T X^T X \boldsymbol{\theta} \right) = 2 X^T X \boldsymbol{\theta}
+     \]
+    \item Derivative of \( -2 y^T X \boldsymbol{\theta} \):
+    \[
+     \frac{\partial}{\partial \boldsymbol{\theta}} \left( -2 y^T X \boldsymbol{\theta} \right) = -2 X^T y
+     \]
+\end{itemize}
+
+Substituting above values, we get:
+\begin{equation}
+\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} \left( X^T X \boldsymbol{\theta} - X^T y \right)
+\end{equation}
+
+
+From the general gradient, we can isolate the derivative with respect to a single parameter \( \theta_j \). The gradient is:
+\[
+\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y)
+\]
+
+The \( j \)-th element of the gradient corresponds to:
+\[
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{m} (X_{\text{column}, j})^T (X \cdot \boldsymbol{\theta} - y)
+\]
+
+\subsection{Gradient of the Cost Function}
+
+The gradient of the cost function with respect to all parameters \(\boldsymbol{\theta}\) is a vector:
+
+\begin{equation}
+    \text{grad} = \begin{bmatrix}
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_0} \\
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_n}
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    \text{grad} = \frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y)
+\end{equation}
+
+\subsection{Analytical Solution}
+
+To find the optimal \(\boldsymbol{\theta}\), set the gradient \(\text{grad}\) to zero:
+
+\[
+\frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y) = 0
+\]
+
+Simplify:
+\[
+X^T (X \cdot \boldsymbol{\theta}) = X^T y
+\]
+
+Rearranging:
+\begin{equation}
+\boldsymbol{\theta} = (X^T X)^{-1} X^T y
+\end{equation}
+
+This is known as the normal equation, which gives the closed-form solution for \(\boldsymbol{\theta}\) in
+linear regression.
