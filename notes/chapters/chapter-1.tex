@@ -329,3 +329,29 @@ Rearranging:
 
 This is known as the normal equation, which gives the closed-form solution for \(\boldsymbol{\theta}\) in
 linear regression.
+
+\subsection{Gradient Descent Algorithm}
+
+\begin{algorithm}[h!]
+\caption{Gradient Descent for Linear Regression for multiple features}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Learning rate $\alpha$, initial values for $\boldsymbol{\theta}$, and maximum iterations or
+convergence threshold $\epsilon$.
+\STATE \textbf{Output:} Optimized parameter vector, $\boldsymbol{\theta}$.
+\REPEAT
+    \STATE Compute gradient vector: $\textbf{grad} \in \mathbb{R}^{(n+1) \times 1}$:
+    \[
+        \textbf{grad} = X^T (X \cdot \boldsymbol{\theta} - y)
+    \]
+    \STATE Update the parameter vector, $\boldsymbol{\theta}$:
+    \[
+        \boldsymbol{\theta} := \boldsymbol{\theta} - \alpha \cdot \textbf{grad}
+    \]
+    \STATE Compute cost function (just for monitoring):
+    \[
+    J(\boldsymbol{\theta}) = \frac{1}{2m} (X \cdot \boldsymbol{\theta} - y)^T (X \cdot \boldsymbol{\theta} - y)
+    \]
+\UNTIL {maximum iterations reached \textbf{or} change in $J(\boldsymbol{\theta})$ is below threshold $\epsilon$.}
+\RETURN $\boldsymbol{\theta}$
+\end{algorithmic}
+\end{algorithm}
