@@ -478,3 +478,97 @@ Substituting the gradient:
 
 Here the \(\alpha\) is the learning rate, controlling the step size.
 
+\section{Probabilistic Interpretation of Linear Regression}
+
+Treating the target variable \(y\) as a random variable conditioned on the input features \(\mathbf{x}\), with the
+assumption that the observed \(y\) values are drawn from a probability distribution centered around the model's
+prediction.
+
+\subsection{Equivalence of least square error and maximum likelihood estimation}
+\[
+    y = \boldsymbol{\theta}^T \mathbf{x} + e
+\]
+
+Here we have:
+\begin{itemize}
+    \item \( y \): The observed output (dependent variable or target)
+    \item \( \boldsymbol{\theta} \): is the parameter vector
+    \item \( \mathbf{x} \): is the feature/input vector
+    \item \( e \): The random noise term, representing unmodeled or unexplained effects
+\end{itemize}
+
+For $i^{th}$ data point:
+\[
+    y^{(i)} = \boldsymbol{\theta}^T \mathbf{x}^{(i)} + e^{(i)}
+\]
+
+\noindent
+\textbf{Model Assumptions:}
+
+\begin{itemize}
+    \item The relationship between the features (\(\mathbf{x}\)) and the target (\(y\)) is linear:
+     \[
+     \mu_y = h_\theta(\mathbf{x}) = \boldsymbol{\theta}^T \mathbf{x},
+     \]
+     where \( \mu_y \) is the mean of \(y\), predicted by the linear model.
+    \item Observations \(y\) deviate from the linear prediction due to noise or unmodeled effects, captured by an additive random error term \(e\):
+     \[
+     y = \boldsymbol{\theta}^T \mathbf{x} + e.
+     \]
+   The noise \(e\) is assumed to follow a Gaussian distribution:
+     \[
+     e \sim \mathcal{N}(0, \sigma^2),
+     \]
+     where \(\sigma^2\) is the variance of the noise.
+    \item Given \(\mathbf{x}\), \(y\) is conditionally normally distributed:
+     \[
+     y \mid \mathbf{x} \sim \mathcal{N}(\boldsymbol{\theta}^T \mathbf{x}, \sigma^2).
+     \]
+\end{itemize}
+
+\noindent
+\textbf{Probabilistic Model}:
+
+The probability density function (PDF) of \(y\) given \(\mathbf{x}\) is:
+
+\begin{equation}
+p(y \mid \mathbf{x}, \boldsymbol{\theta}, \sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{(y -
+\boldsymbol{\theta}^T \mathbf{x})^2}{2\sigma^2}\right).
+\end{equation}
+\\
+
+This represents the likelihood of observing a particular \(y\) value for a given input \(\mathbf{x}\). Now we can estimate the parameters \(\boldsymbol{\theta}\) and \(\sigma^2\) by maximizing the likelihood of the
+observed data. For a dataset \(\{(\mathbf{x}^{(i)}, y^{(i)})\}_{i=1}^m\), the likelihood is the joint probability of all $m$ observations:
+
+\begin{equation}
+    \mathcal{L}(\boldsymbol{\theta}, \sigma^2) = \prod_{i=1}^m p(y^{(i)} \mid \mathbf{x}^{(i)}, \boldsymbol{\theta}, \sigma^2)
+    = \prod_{i=1}^m \frac{1}{\sqrt{2 \pi \sigma}} \exp\left(-\frac{\left(y^{(i)} - h_\theta\left(x^{(i)}\right)\right)^2}{2 \sigma^2}\right)
+\end{equation}
+
+Taking $\ln$ both sides:
+
+\begin{equation}
+    \ell(\boldsymbol{\theta}, \sigma^2) = \ln \mathcal{L}(\boldsymbol{\theta}, \sigma^2)
+= -\frac{m}{2} \ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^m \left( y^{(i)} - h_\theta\left(\mathbf{x}^{(i)}\right) \right)^2
+\end{equation}
+
+Here, maximize the log-likelihood with respect to \(\boldsymbol{\theta}\) is equivalent to minimizing the sum of squared
+errors, under the assumption of Gaussian distribution for the error:
+
+\begin{equation}
+    \boldsymbol{\theta}^* = \arg\min_{\boldsymbol{\theta}} \sum_{i=1}^m \left( y^{(i)} - \boldsymbol{\theta}^T \mathbf{x}^{(i)} \right)^2.
+\end{equation}
+
+This leads to the familiar solution of linear regression (normal equation):
+\begin{equation}
+    \boldsymbol{\theta}^* = (\Phi^T \Phi)^{-1} \Phi^T \mathbf{y}
+\end{equation}
+
+Thus, the optimal value of $\sigma^2$ can be calculated as:
+\begin{equation}
+    \sigma^2_{ML} = \frac{1}{m} \sum_{i=1}^m \left( y^{(i)} - h_{\theta_{ML}}\left(\mathbf{x}^{(i)}\right) \right)^2
+\end{equation}
+
+which is equivalent to minimized cost function.
+
+For any new input \(\mathbf{x}\), the predicted value \(\hat{y}\) is computed using \(h_{\theta_{ML}}(\mathbf{x})\).
