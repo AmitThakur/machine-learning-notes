@@ -25,7 +25,7 @@ where:
     \item $\theta_1^t$:  the slope or coefficient of \(x\) at iteration \(t\)
     \item $\theta_0^t$: intercept at iteration $t$
     \item $\epsilon$: the error term or residual. It captures the noise or other unmodeled effects.
-    \item $\hat{y}$: the output of the linear regression model () for a given input (\(x\))
+    \item $\hat{y}$: the output of the linear regression model ($h_\theta$) for a given input (\(x\))
     \item $h_\theta(x)$: the hypothesis function for linear regression.
 \end{itemize}
 
@@ -208,17 +208,52 @@ The prediction function is:
 
 \subsection{Cost Function}
 
-The residuals (\(E\)) represent the difference between the actual target values (\(y\)) and the
-predicted values (\(X \cdot \boldsymbol{\theta}\)). For \(m\) data points:
+Let $X \in \mathbb{R}^{m \times (n+1)}$ be all the data consisting of $m$ examples:
+\begin{equation}
+\text{Let } X =
+\begin{bmatrix}
+1 & x^{(1)} & (x^{(1)})^2 & (x^{(1)})^3 & \cdots & (x^{(1)})^n \\
+1 & x^{(2)} & (x^{(2)})^2 & (x^{(2)})^3 & \cdots & (x^{(2)})^n \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x^{(m)} & (x^{(m)})^2 & (x^{(m)})^3 & \cdots & (x^{(m)})^n
+\end{bmatrix}
+\end{equation}
+
+and the target vector $y \in \mathbb{R}^m$:
+\begin{equation}
+\mathbf{y} =
+\begin{bmatrix}
+y^{(1)} \\
+y^{(2)} \\
+\vdots \\
+y^{(m)}
+\end{bmatrix}
+\end{equation}
+
+and the parameter vector $\boldsymbol{\theta} \in \mathbb{R}^{n+1}$:
 
 \begin{equation}
-    E = \begin{bmatrix}
+    \boldsymbol{\theta} =
+     \begin{bmatrix}
+     \theta_0 \\
+     \theta_1 \\
+     \vdots \\
+     \theta_n
+     \end{bmatrix}
+\end{equation}
+
+
+The residuals (\(\mathbf{E} \in \mathbb{R}^m\)) represent the difference between the actual target values (\(\mathbf{y}\)) and the
+predicted values (\(X \boldsymbol{\theta}\)). For \(m\) data points:
+
+\begin{equation}
+    \mathbf{E} = \begin{bmatrix}
     e^{(1)} \\
     e^{(2)} \\
     \vdots \\
     e^{(m)}
     \end{bmatrix}
-    = X \cdot \boldsymbol{\theta} - y
+    = X \boldsymbol{\theta} - y
 \end{equation}
 
 The cost function \(J(\boldsymbol{\theta})\) is:
@@ -227,41 +262,80 @@ The cost function \(J(\boldsymbol{\theta})\) is:
     J(\boldsymbol{\theta}) = \frac{1}{2m} \sum_{i=1}^m \left( e^{(i)} \right)^2
 \end{equation}
 
-Using \(E = X \cdot \boldsymbol{\theta} - y\), we can write:
+Using \(E = X \boldsymbol{\theta} - \mathbf{y}\), we can write:
 \[
-J(\boldsymbol{\theta}) = \frac{1}{2m} \|E\|^2
+J(\boldsymbol{\theta}) = \frac{1}{2m} \|\mathbf{E}\|^2
 \]
 
 Expanding this using the transpose:
 \[
-J(\boldsymbol{\theta}) = \frac{1}{2m} E^T E
+J(\boldsymbol{\theta}) = \frac{1}{2m} \mathbf{E}^T \mathbf{E}
 \]
 
-Substituting \(E = X \cdot \boldsymbol{\theta} - y\):
+Substituting \(\mathbf{E} = X \boldsymbol{\theta} - y\):
 \begin{equation}
-J(\boldsymbol{\theta}) = \frac{1}{2m} (X \cdot \boldsymbol{\theta} - y)^T (X \cdot \boldsymbol{\theta} - y)
+J(\boldsymbol{\theta}) = \frac{1}{2m} (X \boldsymbol{\theta} - \mathbf{y})^T (X \boldsymbol{\theta} - \mathbf{y})
 \end{equation}
 
 
 To minimize \(J(\boldsymbol{\theta})\), we compute the gradient (partial derivative) with respect to each
 parameter \(\theta_j\):
 
+\[
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{\partial}{\partial \theta_j} \left[ \frac{1}{2m} \sum_{i=1}^{m} \left( h_{\theta}(x^{(i)}) - y^{(i)} \right)^2 \right].
+\]
+
+Using the chain rule:
+
+\[
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{2m} \sum_{i=1}^{m} 2 \left( h_{\boldsymbol{\theta}}(x^{(i)}) - y^{(i)} \right) \frac{\partial}{\partial \theta_j} \left( h_{\theta}(x^{(i)}) - y^{(i)} \right).
+\]
+
+We take the partial derivative of \( h_{\theta}(x^{(i)}) \) with respect to \( \theta_j \):
+
+\[
+\frac{\partial}{\partial \theta_j} h_{\theta}(x^{(i)}) = \frac{\partial}{\partial \theta_j} \sum_{j=0}^{n} \theta_j x_j^{(i)}
+\]
+
+Since differentiation is linear, we apply the derivative term-by-term:
+
+\[
+\sum_{k=0}^{n} \frac{\partial}{\partial \theta_j} (\theta_k x_k^{(i)})
+\]
+
+\begin{itemize}
+    \item When \( k = j \), the term is \( \theta_j x_j^{(i)} \), and its derivative with respect to \( \theta_j \) is \( x_j^{(i)} \).
+    \item When \( k \neq j \), \( \theta_k \) is independent of \( \theta_j \), so its derivative is $0$.
+\end{itemize}
+
+
+Thus, we are left with:
+
+\[
+\frac{\partial}{\partial \theta_j} h_{\theta}(x^{(i)}) = x_j^{(i)}.
+\]
+
+Finally:
+
 \begin{equation}
-    \frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{m} \sum_{i=1}^m \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}
+\frac{\partial J(\theta)}{\partial \theta_j} = \frac{1}{m} \sum_{i=1}^{m} \left( h_{\theta}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}.
 \end{equation}
-
-We now compute the partial derivative of \( J(\boldsymbol{\theta}) \) with respect to \( \theta_j \).
-The chain rule will be used.
-
+\\\\
+Using the property of transposes \((A - B)^T = A^T - B^T\), expand:
 \[
-J(\boldsymbol{\theta}) = \frac{1}{2m} \left[ (X \cdot \boldsymbol{\theta})^T (X \cdot \boldsymbol{\theta})
-- 2 y^T (X \cdot \boldsymbol{\theta}) + y^T y \right]
+(X \boldsymbol{\theta} - \mathbf{y})^T (X \boldsymbol{\theta} - \mathbf{y}) = (X \boldsymbol{\theta})^T (X \boldsymbol{\theta}) - (X \boldsymbol{\theta})^T \mathbf{y} - \mathbf{y}^T (X \boldsymbol{\theta}) +\mathbf{y}^T \mathbf{y}
 \]
 
+Since these are scalar terms, they are equal (by commutative property of dot product):
+ \[
+ -(X \boldsymbol{\theta})^T \mathbf{y} = -\mathbf{y}^T (X \boldsymbol{\theta})
+ \]
+
+Substituting the simplified terms back, we get:
 \[
-J(\boldsymbol{\theta}) = \frac{1}{2m} \left[ \boldsymbol{\theta}^T X^T X \boldsymbol{\theta}
-- 2 y^T X \boldsymbol{\theta} \right] + \text{constant terms independent of } \boldsymbol{\theta}
+J(\boldsymbol{\theta}) = \frac{1}{2m} \left( \boldsymbol{\theta}^T X^T X \boldsymbol{\theta} - 2 \mathbf{y}^T X \theta + \mathbf{y}^T \mathbf{y} \right)
 \]
+
 
 Compute the derivative with respect to \( \boldsymbol{\theta} \) (matrix calculus):
 
@@ -274,22 +348,26 @@ Compute the derivative with respect to \( \boldsymbol{\theta} \) (matrix calculu
     \[
      \frac{\partial}{\partial \boldsymbol{\theta}} \left( -2 y^T X \boldsymbol{\theta} \right) = -2 X^T y
      \]
+    \item  Derivative of $\mathbf{y}^T \mathbf{y}$:
+    \[
+     \frac{\partial}{\partial \boldsymbol{\theta}} \left( \mathbf{y}^T \mathbf{y} \right) = 0
+     \]
 \end{itemize}
 
 Substituting above values, we get:
 \begin{equation}
-\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} \left( X^T X \boldsymbol{\theta} - X^T y \right)
+\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} \left( X^T X \boldsymbol{\theta} - X^T \mathbf{y} \right)
 \end{equation}
 
 
 From the general gradient, we can isolate the derivative with respect to a single parameter \( \theta_j \). The gradient is:
 \[
-\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y)
+\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} = \frac{1}{m} X^T (X  \boldsymbol{\theta} - \mathbf{y})
 \]
 
 The \( j \)-th element of the gradient corresponds to:
 \[
-\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{m} (X_{\text{column}, j})^T (X \cdot \boldsymbol{\theta} - y)
+\frac{\partial J(\boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{m} (X_{\text{column}, j})^T (X \boldsymbol{\theta} - \mathbf{y})
 \]
 
 \subsection{Gradient of the Cost Function}
@@ -306,7 +384,7 @@ The gradient of the cost function with respect to all parameters \(\boldsymbol{\
 \end{equation}
 
 \begin{equation}
-    \text{grad} = \frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y)
+    \text{grad} = \frac{1}{m} X^T (X  \boldsymbol{\theta} - \mathbf{y})
 \end{equation}
 
 \subsection{Analytical Solution}
@@ -314,17 +392,17 @@ The gradient of the cost function with respect to all parameters \(\boldsymbol{\
 To find the optimal \(\boldsymbol{\theta}\), set the gradient \(\text{grad}\) to zero:
 
 \[
-\frac{1}{m} X^T (X \cdot \boldsymbol{\theta} - y) = 0
+\frac{1}{m} X^T (X \boldsymbol{\theta} - \mathbf{y}) = 0
 \]
 
 Simplify:
 \[
-X^T (X \cdot \boldsymbol{\theta}) = X^T y
+X^T (X \boldsymbol{\theta}) = X^T \mathbf{y}
 \]
 
 Rearranging:
 \begin{equation}
-\boldsymbol{\theta} = (X^T X)^{-1} X^T y
+\boldsymbol{\theta} = (X^T X)^{-1} X^T \mathbf{y}
 \end{equation}
 
 This is known as the normal equation, which gives the closed-form solution for \(\boldsymbol{\theta}\) in
@@ -341,7 +419,7 @@ convergence threshold $\epsilon$.
 \REPEAT
     \STATE Compute gradient vector: $\textbf{grad} \in \mathbb{R}^{(n+1) \times 1}$:
     \[
-        \textbf{grad} = X^T (X \cdot \boldsymbol{\theta} - y)
+        \textbf{grad} = X^T (X \cdot \boldsymbol{\theta} - \mathbf{y})
     \]
     \STATE Update the parameter vector, $\boldsymbol{\theta}$:
     \[
@@ -349,7 +427,7 @@ convergence threshold $\epsilon$.
     \]
     \STATE Compute cost function (just for monitoring):
     \[
-    J(\boldsymbol{\theta}) = \frac{1}{2m} (X \cdot \boldsymbol{\theta} - y)^T (X \cdot \boldsymbol{\theta} - y)
+    J(\boldsymbol{\theta}) = \frac{1}{2m} (X \boldsymbol{\theta} - \mathbf{y})^T (X \boldsymbol{\theta} - \mathbf{y})
     \]
 \UNTIL {maximum iterations reached \textbf{or} change in $J(\boldsymbol{\theta})$ is below threshold $\epsilon$.}
 \RETURN $\boldsymbol{\theta}$
@@ -377,7 +455,7 @@ convergence threshold $\epsilon$.
 
 and the target vector:
 \begin{equation}
-y =
+\mathbf{y} =
 \begin{bmatrix}
 y^{(1)} \\
 y^{(2)} \\
@@ -415,12 +493,12 @@ where $\boldsymbol{\Phi}(\mathbf{x})$ is a matrix of basis functions:
 
 The cost function is:
 \[
-    J(\theta) = \frac{1}{2m} \sum_{i=1}^m \left( e^{(i)} \right)^2
+    J(\boldsymbol{\theta}) = \frac{1}{2m} \sum_{i=1}^m \left( e^{(i)} \right)^2
 \]
 
 Using the matrix form, the residuals for all data points can be written as \(E = \Phi \cdot \boldsymbol{\theta} - y\), and the cost function becomes:
 \[
-J(\theta) = \frac{1}{2m} \mathbf{E}^T \mathbf{E} = \frac{1}{2m} (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})^T
+J(\boldsymbol{\theta}) = \frac{1}{2m} \mathbf{E}^T \mathbf{E} = \frac{1}{2m} (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})^T
 (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})
 \]
 
@@ -440,7 +518,7 @@ The gradient of \(J(\theta)\) with respect to the parameters \(\boldsymbol{\thet
 
 From the cost function:
 \[
-J(\theta) = \frac{1}{2m} (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})^T (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})
+J(\boldsymbol{\theta}) = \frac{1}{2m} (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})^T (\boldsymbol{\Phi} \cdot \boldsymbol{\theta} - \mathbf{y})
 \]
 
 Taking the derivative with respect to \(\boldsymbol{\theta}\):
